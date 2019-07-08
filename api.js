@@ -36,6 +36,37 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
         res.send('<h1>Selamat datang di API 2019</h1>')
     })
 
+    app.get('/users', (req,res)=>{
+        db.collection('users').find({}).toArray()
+        .then((result)=>{
+            console.log(result)
+            res.send(result)
+        })
+    })
+
+    app.post('/inputsatudata', (req,res)=>{
+        //ambil data dari user database
+        // apa yang di post di UI oleh user, bisa diambil dengan req.body
+        // console.log(req.body)
+
+        //app.get -> mengambil datanya dengan req.query
+        //app.post -> mengambil datanya dengan req.body
+
+        // post ke database
+        const data_name = req.body.name
+        const data_age = req.body.age
+        const data_married = req.body.married
+
+        db.collection('users').insertOne({
+            name: data_name,
+            age: data_age,
+            married: data_married
+        }).then((result)=>{
+            res.send('Data berhasil ditambahkan')
+            console.log(result)
+        })
+    })    
+
 })
 
 
