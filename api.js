@@ -61,7 +61,19 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
     })
 
     //GET USERS BY AGE AND MARRIED
+    app.get('/agemarried',(req,res)=>{
 
+        //app.get -> mengambil get dari postman/input user dengan req.query
+        const data_age = parseInt(req.query.age)
+        const data_married = (req.query.married == 'true')
+
+        db.collection('users').find({
+            age: {$gt:data_age}, 
+            married: data_married
+        }).toArray().then((results)=>{
+            res.send(results)
+        })
+    })
 
     //GET USERS BY RANGE OF AGE
     app.get('/agerange',(req,res)=>{
