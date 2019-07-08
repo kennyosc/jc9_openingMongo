@@ -12,10 +12,11 @@ const MongoClient = mongodb.MongoClient
 const ObjectID = mongodb.ObjectID
 
 const URL = 'mongodb://127.0.0.1:27017'
-const database = 'jc-land'
+const database = 'jc_land'
 
 //MongoClient.connect berguna untuk mengkoneksikan API kita dengan MongoDB
 // useNewUrlParser berguna untuk mengubah URL menjadi format yang bisa dibaca oleh MongoClient
+
 /*
 ARGUMENTS:
 1. URL
@@ -36,6 +37,7 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
         res.send('<h1>Selamat datang di API 2019</h1>')
     })
 
+    //FIND ALL DATA
     app.get('/users', (req,res)=>{
         db.collection('users').find({}).toArray()
         .then((result)=>{
@@ -44,6 +46,28 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
         })
     })
 
+    //INSERTMANY   
+    app.post('/insertmany', (req,res)=>{ 
+        console.log(req.body)   
+        const data = req.body
+
+        db.collection('users').insertMany(data).then(results=>{
+            res.send(results)
+        })
+    })
+
+    //get users by paramaters
+    app.get('/selecteduser',(req,res)=>{
+        const data_age = parseInt(req.query.age)
+
+        db.collection('users').find({
+            age:{$gt: data_age}
+        }).toArray().then((results)=>{
+            res.send(results)
+        })
+    })
+
+    //POST 1 DATA
     app.post('/inputsatudata', (req,res)=>{
         //ambil data dari user database
         // apa yang di post di UI oleh user, bisa diambil dengan req.body
