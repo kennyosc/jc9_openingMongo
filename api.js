@@ -46,22 +46,32 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
         })
     })
 
-    //INSERTMANY   
-    app.post('/insertmany', (req,res)=>{ 
-        console.log(req.body)   
-        const data = req.body
 
-        db.collection('users').insertMany(data).then(results=>{
-            res.send(results)
-        })
-    })
-
-    //get users by paramaters
+    //FIND BY PARAMETERS
     app.get('/selecteduser',(req,res)=>{
+
+        //app.get -> mengambil get dari postman/input user dengan req.query
         const data_age = parseInt(req.query.age)
 
         db.collection('users').find({
             age:{$gt: data_age}
+        }).toArray().then((results)=>{
+            res.send(results)
+        })
+    })
+
+    //GET USERS BY AGE AND MARRIED
+
+
+    //GET USERS BY RANGE OF AGE
+    app.get('/agerange',(req,res)=>{
+
+        //app.get -> mengambil get dari postman/input user dengan req.query
+        const range_bawah = parseInt(req.query.bawah)
+        const range_atas = parseInt(req.query.atas)
+
+        db.collection('users').find({
+            age:{$gt: range_bawah, $lt:range_atas}
         }).toArray().then((results)=>{
             res.send(results)
         })
@@ -73,7 +83,6 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
         // apa yang di post di UI oleh user, bisa diambil dengan req.body
         // console.log(req.body)
 
-        //app.get -> mengambil datanya dengan req.query
         //app.post -> mengambil datanya dengan req.body
 
         // post ke database
@@ -90,6 +99,16 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
             console.log(result)
         })
     })    
+
+    //INSERTMANY   
+    app.post('/insertmany', (req,res)=>{ 
+        console.log(req.body)   
+        const data = req.body
+
+        db.collection('users').insertMany(data).then(results=>{
+            res.send(results)
+        })
+    })
 
 })
 
