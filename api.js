@@ -33,6 +33,44 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
     // kita akan memasukkan semua yang kita lakukan di dalam MongoDB di dalam ini
     const db = client.db(database)
 
+    //=========================CREATE==========================
+    //POST 1 DATA
+    app.post('/inputsatudata', (req,res)=>{
+        //ambil data dari user database
+        // apa yang di post di UI oleh user, bisa diambil dengan REQ.BODY
+        // console.log(req.body)
+
+        //app.post -> mengambil datanya dengan req.body
+
+        // post ke database
+        const data_name = req.body.name
+        const data_age = req.body.age
+        const data_married = req.body.married
+
+        db.collection('users').insertOne({
+            name: data_name,
+            age: data_age,
+            married: data_married
+        }).then((result)=>{
+            //isinya result.ops adalah data yang kita post dalam bentuk array [{.....}]
+            res.send(result.ops)
+            //results.ops itu khusus untuk post, kalau GET itu hanya results
+            console.log(result.ops)
+        })
+    })    
+
+    //INSERTMANY   
+    app.post('/insertmany', (req,res)=>{ 
+        console.log(req.body)   
+        const data = req.body
+
+        db.collection('users').insertMany(data).then(results=>{
+            //results.ops itu khusus untuk post, kalau GET itu hanya results
+            res.send(results.ops)
+        })
+    })
+
+    //=========================READ==========================
     app.get('/', (req,res)=>{
         res.send('<h1>Selamat datang di API 2019</h1>')
     })
@@ -102,41 +140,36 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
         })
     })
 
-    //POST 1 DATA
-    app.post('/inputsatudata', (req,res)=>{
-        //ambil data dari user database
-        // apa yang di post di UI oleh user, bisa diambil dengan REQ.BODY
-        // console.log(req.body)
+    //========================UPDATE==========================
+    app.patch('/updateuser/:user_id', (req,res)=>{
+        const user_id = req.params.user_id
+        const userName = req.query.name
 
-        //app.post -> mengambil datanya dengan req.body
-
-        // post ke database
-        const data_name = req.body.name
-        const data_age = req.body.age
-        const data_married = req.body.married
-
-        db.collection('users').insertOne({
-            name: data_name,
-            age: data_age,
-            married: data_married
-        }).then((result)=>{
-            //isinya result.ops adalah data yang kita post dalam bentuk array [{.....}]
-            res.send(result.ops)
-            //results.ops itu khusus untuk post, kalau GET itu hanya results
-            console.log(result.ops)
-        })
-    })    
-
-    //INSERTMANY   
-    app.post('/insertmany', (req,res)=>{ 
-        console.log(req.body)   
-        const data = req.body
-
-        db.collection('users').insertMany(data).then(results=>{
-            //results.ops itu khusus untuk post, kalau GET itu hanya results
-            res.send(results.ops)
+        db.collection('users').updateOne({
+            _id: new ObjectID(user_id)
+        },{
+            $set:{
+                name : userName
+            }
+        }).then((results)=>{
+            res.send(results)
         })
     })
+
+    //=========================DELETE==========================
+    app.delete('/users/:user_id', (req,res)=>{
+        const user_id = req.params.user_id
+
+        db.collection('users').deleteOne({
+            _id: new ObjectID(user_id)
+        }).then((result)=>{
+            res.send(result)
+        })
+    })
+
+
+
+
 
 })
 
