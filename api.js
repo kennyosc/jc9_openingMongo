@@ -159,17 +159,31 @@ MongoClient.connect(URL, {useNewUrlParser:true}, (err, client)=>{
     //=========================DELETE==========================
     app.delete('/users/:user_id', (req,res)=>{
         const user_id = req.params.user_id
+        let obj_user
 
-        db.collection('users').deleteOne({
+        db.collection('users').findOne({
             _id: new ObjectID(user_id)
-        }).then((result)=>{
-            res.send(result)
+        }).then(results=>{
+            if(results){
+                obj_user = results
+
+                db.collection('users').deleteOne({
+                    _id: new ObjectID(user_id)
+                }).then((obj_user)=>{
+                    res.send({
+                        status: 'SUCCES',
+                        deletedUser: obj_user})
+                })
+
+            } else{
+                res.send({
+                    status:'Fail',
+                    deletedUser: {},
+                    message: 'User Not Found'
+                })
+            }
         })
     })
-
-
-
-
 
 })
 
